@@ -50,7 +50,7 @@ const  Lists = () => {
             works.map(work => {
 
               return (
-                <ListItem button key={work}>
+                <ListItem button key={work.id}>
                   <Grid container>
                     <Grid item sm={9}>
                     <ListItemText primary={`${work.h4}`} />
