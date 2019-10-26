@@ -37,7 +37,7 @@ const Form = ({ setOpen = null,id = null }) => {
 
   useEffect(()=>{
     setState(getInitState())
-  },[id])
+  },[id,works])
 
   function getInitState(){
     const work = works.filter(work => id === work.id)
