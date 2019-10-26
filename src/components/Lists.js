@@ -61,7 +61,7 @@ const  Lists = () => {
                 <ListItem button key={work.id}>
                   <Grid container>
                     <Grid item sm={9}>
-                    <ListItemText primary={`${work.h4}`} onClick={()=>onSelect(work.id)} />
+                    <ListItemText primary={`${work.title}`} onClick={()=>onSelect(work.id)} />
                     </Grid>
                     <Grid item sm>
                       <ListItemSecondaryAction>

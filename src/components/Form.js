@@ -18,8 +18,6 @@ import AppContext from '../contexts/AppContext'
 
 const Form = ({ setOpen = null,id = null }) => {
 
-
-
   const edit = id ? true : false
 
   const useStyles = makeStyles(theme => ({
@@ -32,18 +30,20 @@ const Form = ({ setOpen = null,id = null }) => {
     }
   }))
 
-  const {　works,dispatch　} = useContext(AppContext)
+  const {　works, dispatch　} = useContext(AppContext)
 
-  const [title,setTitle] = useState(initTitle())
-
-  function initTitle () {
-    const work = works.filter(work => id === work.id)
-    return work.length === 0 ? '': work[0].h4
-  }
-
+  const [ state, setState ] = useState(getInitState())
   useEffect(()=>{
-    setTitle(initTitle)
+    setState(getInitState())
   },[id])
+
+  function getInitState(){
+    const work = works.filter(work => id === work.id)
+    return work.length === 0 ? {
+      title: '',
+      descritption: ''
+    } : work[0]
+  }
 
 
   const classes = useStyles()
@@ -51,7 +51,8 @@ const Form = ({ setOpen = null,id = null }) => {
   const onSubmit = (edit) => {
 
     const info = {
-      h4: title
+      title: state.title,
+      description: state.description
     }
     
     if(!edit){
@@ -68,17 +69,31 @@ const Form = ({ setOpen = null,id = null }) => {
         id
       })
     }
-
   }
 
   return (
     <form>
       <TextField
         label="タイトル"
-        className={classes.FormControl}
-        onChange={e=>setTitle(e.target.value)}
-        value={title}
+        className={edit?'':classes.FormControl}
+        fullWidth
+        onChange={e=>setState({...state, title :e.target.value})}
+        value={state.title}
       />
+      <TextField
+        label="概要"
+        className={edit?'':classes.FormControl}
+        fullWidth
+        multiline
+        onChange={e=>setState({...state, description :e.target.value})}
+        value={state.description}
+      />
+
+      <Button
+        variant="outlined"
+      >
+        追加
+      </Button>
 
       <br/>
       <br/>
