@@ -15,22 +15,23 @@ import {
 
 const works = (state = [],action) => {
 
-  let work,id;
-
   switch(action.type){
-    case CREATE_EVENT:
+    
+    case CREATE_EVENT:{
 
-      work = action.info
-      id = state[0].id + 1
+      const work = action.info
+      const id = state[0].id + 1
 
       return [{id,...work},...state]
-    case EDIT_EVENT:
+    }
+    case EDIT_EVENT:{
 
       state = state.map(work =>{
         return work.id === action.id ? {id:action.id,...action.info} : work
       })
 
       return state
+    }
     default:
       return state
   }
