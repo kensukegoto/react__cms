@@ -18,6 +18,7 @@ import AppContext from '../contexts/AppContext'
 
 const Form = ({ setOpen = null,id = null }) => {
 
+
   const edit = id ? true : false
 
   const useStyles = makeStyles(theme => ({
@@ -33,6 +34,7 @@ const Form = ({ setOpen = null,id = null }) => {
   const {　works, dispatch　} = useContext(AppContext)
 
   const [ state, setState ] = useState(getInitState())
+
   useEffect(()=>{
     setState(getInitState())
   },[id])
@@ -41,7 +43,8 @@ const Form = ({ setOpen = null,id = null }) => {
     const work = works.filter(work => id === work.id)
     return work.length === 0 ? {
       title: '',
-      descritption: ''
+      descritption: '',
+      points: []
     } : work[0]
   }
 
@@ -52,7 +55,8 @@ const Form = ({ setOpen = null,id = null }) => {
 
     const info = {
       title: state.title,
-      description: state.description
+      description: state.description,
+      points: state.points
     }
     
     if(!edit){
@@ -88,7 +92,21 @@ const Form = ({ setOpen = null,id = null }) => {
         onChange={e=>setState({...state, description :e.target.value})}
         value={state.description}
       />
-
+      {state.points.map((point,idx)=>{
+        return (
+          <TextField 
+            label="ポイント"
+            fullWidth
+            key={idx}
+            onChange={e=>{ 
+              let points = [...state.points]
+              points[idx] = e.target.value
+              setState({...state, points})
+             }}
+            value={point}
+          />
+        )
+      })}
       <Button
         variant="outlined"
       >
