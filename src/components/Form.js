@@ -109,6 +109,7 @@ const Form = ({ setOpen = null,id = null }) => {
       })}
       <Button
         variant="outlined"
+        onClick={()=>setState({...state, points: [...state.points,""]})}
       >
         追加
       </Button>
