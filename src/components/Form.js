@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React,{ useState,useContext,useEffect } from 'react';
 
 import {
   Button,
@@ -8,7 +8,19 @@ import {
   makeStyles
 } from '@material-ui/core/styles'
 
-const Form = ({ setOpen }) => {
+import {
+  CREATE_EVENT,
+  EDIT_EVENT
+} from '../actions'
+
+import AppContext from '../contexts/AppContext'
+
+
+const Form = ({ setOpen = null,id = null }) => {
+
+
+
+  const edit = id ? true : false
 
   const useStyles = makeStyles(theme => ({
     FormControl: {
@@ -20,21 +32,43 @@ const Form = ({ setOpen }) => {
     }
   }))
 
-  const [title,setTitle] = useState('')
-  const [description,setDescription] = useState('')
+  const {　works,dispatch　} = useContext(AppContext)
+
+  const [title,setTitle] = useState(initTitle())
+
+  function initTitle () {
+    const work = works.filter(work => id === work.id)
+    return work.length === 0 ? '': work[0].h4
+  }
+
+  useEffect(()=>{
+    setTitle(initTitle)
+  },[id])
 
 
   const classes = useStyles()
 
-  const onSubmit = () => {
-    
+  const onSubmit = (edit) => {
+
     const info = {
-      title,
-      description
+      h4: title
     }
-    console.log(info)
     
-    setOpen(false)
+    if(!edit){
+      dispatch({
+        type: CREATE_EVENT,
+        info
+      })
+  
+      setOpen(false)
+    }else{
+      dispatch({
+        type: EDIT_EVENT,
+        info,
+        id
+      })
+    }
+
   }
 
   return (
@@ -42,23 +76,32 @@ const Form = ({ setOpen }) => {
       <TextField
         label="タイトル"
         className={classes.FormControl}
-        onChange={e=>setTitle(e.target.value)} 
+        onChange={e=>setTitle(e.target.value)}
+        value={title}
       />
-      <TextField
-        label="概要"
-        className={classes.FormControl}
-        onChange={e=>setDescription(e.target.value)} 
-      />
+
       <br/>
       <br/>
+      {!edit?
       <Button 
         className={classes.Submit}
         variant="contained" 
         color='primary' 
-        onClick={onSubmit}
+        onClick={()=>onSubmit(edit)}
       >
         登録
       </Button>
+      :
+      <Button 
+      className={classes.Submit}
+      variant="contained" 
+      color='primary' 
+      onClick={()=>onSubmit(edit)}
+      >
+        更新
+      </Button>
+    }
+
     </form>
   )
 }

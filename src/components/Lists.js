@@ -1,4 +1,4 @@
-import React,{ useContext } from 'react'
+import React,{ useContext,useState } from 'react'
 
 import {
   Paper,
@@ -8,18 +8,16 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   IconButton
-} from '@material-ui/core';
+} from '@material-ui/core'
 import {
   Edit as EditIcon,
   Delete as DeleteIcon
-} from '@material-ui/icons';
+} from '@material-ui/icons'
+import Form from './Form'
 
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@material-ui/core/styles'
 
 import  AppContext from '../contexts/AppContext'
-
-
-
 
 
 const useStyles = makeStyles(theme => ({
@@ -32,13 +30,23 @@ const useStyles = makeStyles(theme => ({
   }
 }))
 
-
-
 const  Lists = () => {
 
   const classes = useStyles()
 
   const {works} = useContext(AppContext)
+  const [id,setId]= useState(0)
+  const [editMode,setMode]= useState(false)
+
+  const onSelect = () => {
+    setMode(false)
+  }
+
+  const onEdit = (id) => {
+    setId(id)
+    setMode(true)
+  }
+
 
   return (
     <>
@@ -53,14 +61,14 @@ const  Lists = () => {
                 <ListItem button key={work.id}>
                   <Grid container>
                     <Grid item sm={9}>
-                    <ListItemText primary={`${work.h4}`} />
+                    <ListItemText primary={`${work.h4}`} onClick={()=>onSelect(work.id)} />
                     </Grid>
                     <Grid item sm>
                       <ListItemSecondaryAction>
                         <IconButton aria-label="delete">
                           <DeleteIcon />
                         </IconButton>
-                        <IconButton aria-label="edit">
+                        <IconButton aria-label="edit" onClick={()=>onEdit(work.id)}>
                           <EditIcon />
                         </IconButton>
                       </ListItemSecondaryAction>
@@ -74,7 +82,12 @@ const  Lists = () => {
           </Paper>
         </Grid>
         <Grid item sm>
-          <Paper className={classes.paper}></Paper>
+          {editMode ? 
+            <Paper className={classes.paper}>
+              <Form id={id}/>
+            </Paper>
+            :<Paper className={classes.paper}>{editMode?"true":"false"}</Paper> 
+          }
         </Grid>
       </Grid>
     </>

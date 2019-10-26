@@ -1,4 +1,4 @@
-export let works = [
+export default [
   {
     "id": 1,
     "h4": "茨城の住宅で夫婦殺害 次女は手に薬品のようなものをかけられ軽傷",
