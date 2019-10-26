@@ -53,10 +53,18 @@ const Form = ({ setOpen = null,id = null }) => {
 
   const onSubmit = (edit) => {
 
+    // pointsの空文字チェック
+    const points = state.points.reduce((acc,point)=>{
+      if(point.trim() !== ''){
+        acc.push(point)
+      }
+      return acc
+    },[])
+
     const info = {
       title: state.title,
       description: state.description,
-      points: state.points
+      points
     }
     
     if(!edit){
