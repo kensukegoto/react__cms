@@ -38,7 +38,9 @@ const  Lists = () => {
   const [id,setId]= useState(0)
   const [editMode,setMode]= useState(false)
 
-  const onSelect = () => {
+  const onSelect = (id) => {
+  
+    setId(id)
     setMode(false)
   }
 
@@ -82,12 +84,9 @@ const  Lists = () => {
           </Paper>
         </Grid>
         <Grid item sm>
-          {editMode ? 
-            <Paper className={classes.paper}>
-              <Form id={id}/>
-            </Paper>
-            :<Paper className={classes.paper}>{editMode?"true":"false"}</Paper> 
-          }
+          <Paper className={classes.paper}>
+            <Form id={id} editMode={editMode} />
+          </Paper>
         </Grid>
       </Grid>
     </>

@@ -16,25 +16,35 @@ import {
 import AppContext from '../contexts/AppContext'
 
 
-const Form = ({ setOpen = null,id = null }) => {
+const Form = ({ setOpen = null,id = null,editMode = null }) => {
 
+  const edit = editMode
 
-  const edit = id ? true : false
+   // 0 create 1 edit 2 select
+  const mode = (editMode === true) ? 1 : (editMode === null ) ? 0 : 2
 
   const useStyles = makeStyles(theme => ({
     FormControl: {
       width: 500
     },
+    hide:{
+      display: 'none'
+    },
     Submit: {
       display: 'block',
       margin: '0 auto'
+    },
+    Preview: {
+      width: '150px'
     }
   }))
 
   const {　works, dispatch　} = useContext(AppContext)
 
   const [ state, setState ] = useState(getInitState())
+  const [ tmb, setTmb  ] = useState(null)
 
+  // idかworksの変更があれば再レンダリング
   useEffect(()=>{
     setState(getInitState())
   },[id,works])
@@ -43,7 +53,7 @@ const Form = ({ setOpen = null,id = null }) => {
     const work = works.filter(work => id === work.id)
     return work.length === 0 ? {
       title: '',
-      descritption: '',
+      description: '',
       points: []
     } : work[0]
   }
@@ -51,7 +61,19 @@ const Form = ({ setOpen = null,id = null }) => {
 
   const classes = useStyles()
 
-  const onSubmit = (edit) => {
+  const review = e => {
+    const files = e.target.files;
+    const file = files[0];
+    const reader = new FileReader();
+    reader.onload = e => {
+      setTmb(e.target.result);
+    };
+    reader.readAsDataURL(file);
+  }
+
+  const onSubmit = (mode) => {
+
+    const edit = mode === 1 ? true : false
 
     // pointsの空文字チェック
     const points = state.points.reduce((acc,point)=>{
@@ -91,6 +113,7 @@ const Form = ({ setOpen = null,id = null }) => {
         fullWidth
         onChange={e=>setState({...state, title :e.target.value})}
         value={state.title}
+        disabled={mode===2}
       />
       <TextField
         label="概要"
@@ -99,6 +122,7 @@ const Form = ({ setOpen = null,id = null }) => {
         multiline
         onChange={e=>setState({...state, description :e.target.value})}
         value={state.description}
+        disabled={mode===2}
       />
       {state.points.map((point,idx)=>{
         return (
@@ -112,36 +136,61 @@ const Form = ({ setOpen = null,id = null }) => {
               setState({...state, points})
              }}
             value={point}
+            disabled={mode===2}
           />
         )
       })}
       <Button
         variant="outlined"
         onClick={()=>setState({...state, points: [...state.points,""]})}
+        className={mode===2?classes.hide:''}
       >
         追加
       </Button>
-
       <br/>
       <br/>
-      {!edit?
+      <input
+        accept="image/*"
+        className={classes.hide}
+        id="outlined-button-file"
+        multiple
+        type="file"
+        onChange={e=>{
+          review(e)
+        }}
+      />
+      <label htmlFor="outlined-button-file">
+        <Button variant="outlined" component="span">
+          Upload
+        </Button>
+      </label>
+      {!tmb?""
+      :<img src={tmb} alt="プレビュー画像" className={classes.Preview} />
+      }
+      <br/>
+      <br/>
+    {
+    mode===0?
       <Button 
         className={classes.Submit}
         variant="contained" 
         color='primary' 
-        onClick={()=>onSubmit(edit)}
+        onClick={()=>onSubmit(mode)}
       >
         登録
       </Button>
       :
+    mode===1?
       <Button 
       className={classes.Submit}
       variant="contained" 
       color='primary' 
-      onClick={()=>onSubmit(edit)}
+      onClick={()=>onSubmit(mode)}
       >
         更新
       </Button>
+      :
+      null
     }
 
     </form>
