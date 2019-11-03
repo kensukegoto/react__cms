@@ -36,6 +36,11 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     },
     Preview: {
       width: '150px'
+    },
+    Points: {
+      padding: 0,
+      margin: 0,
+      listStyleType: "none"
     }
   }))
 
@@ -54,7 +59,8 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     return work.length === 0 ? {
       title: '',
       description: '',
-      points: []
+      points: [],
+      tmb: ''
     } : work[0]
   }
 
@@ -67,7 +73,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     const reader = new FileReader();
     reader.onload = e => {
       setTmb(e.target.result);
-    };
+    }
     reader.readAsDataURL(file);
   }
 
@@ -86,7 +92,8 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     const info = {
       title: state.title,
       description: state.description,
-      points
+      points,
+      tmb
     }
     
     if(!edit){
@@ -94,7 +101,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
         type: CREATE_EVENT,
         info
       })
-  
+      setTmb(null)
       setOpen(false)
     }else{
       dispatch({
@@ -103,43 +110,57 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
         id
       })
     }
+
+    setTmb(null)
   }
 
   return (
     <form>
-      <TextField
-        label="タイトル"
-        className={edit?'':classes.FormControl}
-        fullWidth
-        onChange={e=>setState({...state, title :e.target.value})}
-        value={state.title}
-        disabled={mode===2}
-      />
-      <TextField
-        label="概要"
-        className={edit?'':classes.FormControl}
-        fullWidth
-        multiline
-        onChange={e=>setState({...state, description :e.target.value})}
-        value={state.description}
-        disabled={mode===2}
-      />
-      {state.points.map((point,idx)=>{
-        return (
-          <TextField 
-            label="ポイント"
-            fullWidth
-            key={idx}
-            onChange={e=>{ 
-              let points = [...state.points]
-              points[idx] = e.target.value
-              setState({...state, points})
-             }}
-            value={point}
-            disabled={mode===2}
-          />
-        )
-      })}
+      <div>
+        <TextField
+          label="タイトル"
+          className={edit?'':classes.FormControl}
+          fullWidth
+          onChange={e=>setState({...state, title :e.target.value})}
+          value={state.title}
+          disabled={mode===2}
+        />
+      </div>
+      <div>
+        <TextField
+          label="概要"
+          className={edit?'':classes.FormControl}
+          fullWidth
+          multiline
+          onChange={e=>setState({...state, description :e.target.value})}
+          value={state.description}
+          disabled={mode===2}
+        />
+      </div>
+      <div>
+        {state.points.length > 0 ?
+          <ul className={classes.Points}>
+          {state.points.map((point,idx)=>{
+            return (
+              <li key={idx}>
+                <TextField 
+                  label="ポイント"
+                  fullWidth
+                  onChange={e=>{ 
+                    let points = [...state.points]
+                    points[idx] = e.target.value
+                    setState({...state, points})
+                  }}
+                  value={point}
+                  disabled={mode===2}
+                />
+              </li>
+            )
+          })}
+          </ul>
+        : ""
+        }
+      {/* ポイント追加 ボタン */}
       <Button
         variant="outlined"
         onClick={()=>setState({...state, points: [...state.points,""]})}
@@ -147,28 +168,42 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       >
         追加
       </Button>
-      <br/>
-      <br/>
-      <input
-        accept="image/*"
-        className={classes.hide}
-        id="outlined-button-file"
-        multiple
-        type="file"
-        onChange={e=>{
-          review(e)
-        }}
-      />
-      <label htmlFor="outlined-button-file">
-        <Button variant="outlined" component="span">
-          Upload
-        </Button>
-      </label>
-      {!tmb?""
-      :<img src={tmb} alt="プレビュー画像" className={classes.Preview} />
-      }
-      <br/>
-      <br/>
+      </div>
+      <div>
+        <div>
+          <input
+            accept="image/*"
+            className={classes.hide}
+            id={"upload_btn_" + mode}
+            multiple
+            type="file"
+            onChange={e=>{
+              review(e)
+            }}
+          />
+          <label htmlFor={"upload_btn_" + mode}>
+            <Button variant="outlined" component="span">
+              サムネのアップロード
+            </Button>
+          </label>
+        </div>
+        {
+          console.log(tmb)
+        }
+        {
+        !tmb
+        ?
+          state.tmb!==""
+          ?
+            <img src={state.tmb} alt="サムネ" className={classes.Preview}  />
+          :
+            ""
+        :
+          <img src={tmb} alt="プレビュー画像" className={classes.Preview} />
+        }
+      </div>
+      <div>
+
     {
     mode===0?
       <Button 
@@ -192,7 +227,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       :
       null
     }
-
+      </div>
     </form>
   )
 }
