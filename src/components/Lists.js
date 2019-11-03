@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
     padding: 20,
     marginTop: 10,
     marginBottom: 10,
-    height: 500,
+    height: 600,
     overflowY: "auto"
   }
 }))

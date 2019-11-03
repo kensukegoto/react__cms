@@ -1,9 +1,13 @@
 import React,{ useState,useContext,useEffect } from 'react';
 
 import {
+  Fab,
+  Box,
   Button,
-  TextField
+  TextField,
+  Typography
 } from '@material-ui/core'
+import AddIcon from '@material-ui/icons/Add'
 import {
   makeStyles
 } from '@material-ui/core/styles'
@@ -27,12 +31,18 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     FormControl: {
       width: 500
     },
+    Title:{
+      fontWeight: "bold"
+    },
     hide:{
       display: 'none'
     },
     Submit: {
       display: 'block',
       margin: '0 auto'
+    },
+    mR_1: {
+      marginRight: theme.spacing(1)
     },
     Preview: {
       width: '150px'
@@ -61,6 +71,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       title: '',
       description: '',
       points: [],
+      url: '',
       tmb: ''
     } : work[0]
   }
@@ -93,6 +104,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     const info = {
       title: work.title,
       description: work.description,
+      url: work.url,
       points,
       tmb
     }
@@ -117,19 +129,23 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
 
   return (
     <form>
-      <div>
+      <Box mb={2}>
+        <Typography className={classes.Title} variant="subtitle1" component="p">
+          タイトル
+        </Typography>
         <TextField
-          label="タイトル"
           className={edit?'':classes.FormControl}
           fullWidth
           onChange={e=>setWork({...work, title :e.target.value})}
           value={work.title}
           disabled={mode===2}
         />
-      </div>
-      <div>
+      </Box>
+      <Box mb={2}>
+        <Typography className={classes.Title} variant="subtitle1" component="p">
+          概要
+        </Typography>
         <TextField
-          label="概要"
           className={edit?'':classes.FormControl}
           fullWidth
           multiline
@@ -137,15 +153,18 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
           value={work.description}
           disabled={mode===2}
         />
-      </div>
-      <div>
+      </Box>
+      <Box mb={2}>
+        <Typography className={classes.Title} variant="subtitle1" component="p">
+          ポイント
+        </Typography>
         {work.points.length > 0 ?
           <ul className={classes.Points}>
           {work.points.map((point,idx)=>{
             return (
               <li key={idx}>
+                <Box mb={2}>
                 <TextField 
-                  label="ポイント"
                   fullWidth
                   onChange={e=>{ 
                     let points = [...work.points]
@@ -155,23 +174,51 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
                   value={point}
                   disabled={mode===2}
                 />
+                </Box>
               </li>
             )
           })}
           </ul>
         : ""
         }
-      {/* ポイント追加 ボタン */}
-      <Button
-        variant="outlined"
-        onClick={()=>setWork({...work, points: [...work.points,""]})}
-        className={mode===2?classes.hide:''}
-      >
-        追加
-      </Button>
-      </div>
-      <div>
-        <div>
+        <Box mt={2}>
+          <Fab 
+            aria-label="add" 
+            onClick={()=>setWork({...work, points: [...work.points,""]})}
+            className={mode===2?classes.hide:''}
+          >
+            <AddIcon />
+          </Fab>
+        </Box>
+      </Box>
+      <Box mb={2}>
+        <Typography className={classes.Title} variant="subtitle1" component="p">
+          URL
+        </Typography>
+        <TextField
+          className={edit?'':classes.FormControl}
+          fullWidth
+          onChange={e=>setWork({...work, url :e.target.value})}
+          value={work.url}
+          disabled={mode===2}
+        />
+      </Box>
+      <Box mb={2}>
+        <Typography className={classes.Title} variant="subtitle1" component="p">
+          サムネイル
+        </Typography>
+        {
+        !tmb
+        ?
+          work.tmb!==""
+          ?
+          <Box mb={2} mt={2}><img src={work.tmb} alt="サムネ" className={classes.Preview}  /></Box>
+          :
+            ""
+        :
+        <Box mb={2} mt={2}><img src={tmb} alt="プレビュー画像" className={classes.Preview} /></Box>
+        }
+        <Box mb={2} mt={2}>
           <input
             accept="image/*"
             className={classes.hide}
@@ -183,26 +230,16 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
             }}
           />
           <label htmlFor={"upload_btn_" + mode}>
-            <Button variant="outlined" component="span">
-              サムネのアップロード
+            <Button variant="contained" component="span" className={classes.mR_1}>
+              アップロード
             </Button>
           </label>
-        </div>
-        {
-          console.log(tmb)
-        }
-        {
-        !tmb
-        ?
-          work.tmb!==""
-          ?
-            <img src={work.tmb} alt="サムネ" className={classes.Preview}  />
-          :
-            ""
-        :
-          <img src={tmb} alt="プレビュー画像" className={classes.Preview} />
-        }
-      </div>
+          <Button variant="contained" component="span">
+              削除
+          </Button>
+        </Box>
+
+      </Box>
       <div>
 
     {
