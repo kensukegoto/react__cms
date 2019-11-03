@@ -46,15 +46,16 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
 
   const {　works, dispatch　} = useContext(AppContext)
 
-  const [ state, setState ] = useState(getInitState())
+  const [ work, setWork ] = useState(getInitWork())
   const [ tmb, setTmb  ] = useState(null)
 
   // idかworksの変更があれば再レンダリング
   useEffect(()=>{
-    setState(getInitState())
+    setTmb(null)
+    setWork(getInitWork())
   },[id,works])
 
-  function getInitState(){
+  function getInitWork(){
     const work = works.filter(work => id === work.id)
     return work.length === 0 ? {
       title: '',
@@ -82,7 +83,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     const edit = mode === 1 ? true : false
 
     // pointsの空文字チェック
-    const points = state.points.reduce((acc,point)=>{
+    const points = work.points.reduce((acc,point)=>{
       if(point.trim() !== ''){
         acc.push(point)
       }
@@ -90,8 +91,8 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     },[])
 
     const info = {
-      title: state.title,
-      description: state.description,
+      title: work.title,
+      description: work.description,
       points,
       tmb
     }
@@ -121,8 +122,8 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
           label="タイトル"
           className={edit?'':classes.FormControl}
           fullWidth
-          onChange={e=>setState({...state, title :e.target.value})}
-          value={state.title}
+          onChange={e=>setWork({...work, title :e.target.value})}
+          value={work.title}
           disabled={mode===2}
         />
       </div>
@@ -132,24 +133,24 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
           className={edit?'':classes.FormControl}
           fullWidth
           multiline
-          onChange={e=>setState({...state, description :e.target.value})}
-          value={state.description}
+          onChange={e=>setWork({...work, description :e.target.value})}
+          value={work.description}
           disabled={mode===2}
         />
       </div>
       <div>
-        {state.points.length > 0 ?
+        {work.points.length > 0 ?
           <ul className={classes.Points}>
-          {state.points.map((point,idx)=>{
+          {work.points.map((point,idx)=>{
             return (
               <li key={idx}>
                 <TextField 
                   label="ポイント"
                   fullWidth
                   onChange={e=>{ 
-                    let points = [...state.points]
+                    let points = [...work.points]
                     points[idx] = e.target.value
-                    setState({...state, points})
+                    setWork({...work, points})
                   }}
                   value={point}
                   disabled={mode===2}
@@ -163,7 +164,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       {/* ポイント追加 ボタン */}
       <Button
         variant="outlined"
-        onClick={()=>setState({...state, points: [...state.points,""]})}
+        onClick={()=>setWork({...work, points: [...work.points,""]})}
         className={mode===2?classes.hide:''}
       >
         追加
@@ -193,9 +194,9 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
         {
         !tmb
         ?
-          state.tmb!==""
+          work.tmb!==""
           ?
-            <img src={state.tmb} alt="サムネ" className={classes.Preview}  />
+            <img src={work.tmb} alt="サムネ" className={classes.Preview}  />
           :
             ""
         :
