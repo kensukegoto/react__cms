@@ -35,7 +35,7 @@ const  Lists = () => {
   const classes = useStyles()
 
   const {works} = useContext(AppContext)
-  const [id,setId]= useState(0)
+  const [id,setId]= useState(works.length)
   const [mode,setMode]= useState("select")
 
   const onSelect = (id) => {

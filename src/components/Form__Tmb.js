@@ -22,14 +22,29 @@ const Form__Tmb = ({work,mode,selectMode,styles__Form,tmb,setTmb}) => {
     },
   }))()
 
+
   const review = e => {
+  
     const files = e.target.files;
-    const file = files[0];
-    const reader = new FileReader();
-    reader.onload = e => {
-      setTmb(e.target.result);
+
+    if(files){
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onload = e => {
+        setTmb({
+          state: 1,
+          val: e.target.result
+        });
+      }
+      reader.readAsDataURL(file);
+    }else{
+        setTmb({...tmb,val:""});
     }
-    reader.readAsDataURL(file);
+
+  }
+
+  const clearReview = () => {
+    setTmb({state:1,val:""});
   }
 
   return (
@@ -38,16 +53,20 @@ const Form__Tmb = ({work,mode,selectMode,styles__Form,tmb,setTmb}) => {
       サムネイル
     </Typography>
     {
-    !tmb
-    ?
-      work.tmb!==""
-      ?
-      <Box mb={2} mt={2}><img src={work.tmb} alt="サムネ" className={styles.Preview}  /></Box>
-      :
-        ""
-    :
-    <Box mb={2} mt={2}><img src={tmb} alt="プレビュー画像" className={styles.Preview} /></Box>
+      (()=>{  
+        if(tmb.state){
+          return (tmb.val!=="") ? 
+          <Box mb={2} mt={2}><img src={tmb.val} alt="プレビュー画像" className={styles.Preview} /></Box>
+          : ""
+        } 
+
+        return (work.tmb!=="") ? 
+          <Box mb={2} mt={2}><img src={work.tmb} alt="サムネ画像" className={styles.Preview} /></Box>
+          :""
+
+      })()
     }
+
     <Box mb={2} mt={2}>
       <input
         accept="image/*"
@@ -65,7 +84,7 @@ const Form__Tmb = ({work,mode,selectMode,styles__Form,tmb,setTmb}) => {
           アップロード
         </Button>
       </label>
-      <Button variant="contained" component="span" className={styles.button} disabled={selectMode}>
+      <Button variant="contained" component="span" className={styles.button} disabled={selectMode} onClick={clearReview}>
           削除
       </Button>
     </Box>

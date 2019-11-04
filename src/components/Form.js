@@ -46,15 +46,22 @@ const Form = ({ setOpen = null,id = null,mode = "select" }) => {
   const {　works, dispatch　} = useContext(AppContext)
 
   const [ work, setWork ] = useState(getInitWork())
-  const [ tmb, setTmb ] = useState(null)
+  const [ tmb, setTmb ] = useState({
+    state: 0,
+    val: ""
+  })
 
   // idかworksの変更があれば再レンダリング
   useEffect(()=>{
-    setTmb(null)
     setWork(getInitWork())
+    setTmb({
+      state: 0,
+      val: ""
+    })
   },[id,works])
 
   function getInitWork(){
+ 
     const work = works.filter(work => id === work.id)
     return work.length === 0 ? {
       title: '',
@@ -79,8 +86,8 @@ const Form = ({ setOpen = null,id = null,mode = "select" }) => {
       title: work.title,
       description: work.description,
       url: work.url,
-      points,
-      tmb
+      tmb:tmb.val,
+      points
     }
     
     if(createMode){
@@ -101,6 +108,7 @@ const Form = ({ setOpen = null,id = null,mode = "select" }) => {
 
   return (
     <form>
+      {console.log(work)}
       {/* タイトル */}
       <Box mb={2}>
         <Typography className={styles__Form.title} variant="subtitle1" component="p">
