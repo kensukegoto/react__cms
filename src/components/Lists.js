@@ -36,17 +36,16 @@ const  Lists = () => {
 
   const {works} = useContext(AppContext)
   const [id,setId]= useState(0)
-  const [editMode,setMode]= useState(false)
+  const [mode,setMode]= useState("select")
 
   const onSelect = (id) => {
-  
     setId(id)
-    setMode(false)
+    setMode("select")
   }
 
   const onEdit = (id) => {
     setId(id)
-    setMode(true)
+    setMode("edit")
   }
 
 
@@ -85,7 +84,7 @@ const  Lists = () => {
         </Grid>
         <Grid item sm>
           <Paper className={classes.paper}>
-            <Form id={id} editMode={editMode} />
+            <Form id={id} mode={mode} />
           </Paper>
         </Grid>
       </Grid>

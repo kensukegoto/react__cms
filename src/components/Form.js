@@ -1,13 +1,15 @@
 import React,{ useState,useContext,useEffect } from 'react';
 
 import {
-  Fab,
   Box,
   Button,
   TextField,
   Typography
 } from '@material-ui/core'
-import AddIcon from '@material-ui/icons/Add'
+
+import Form__Points from './Form__Points'
+import Form__Tmb from './Form__Tmb'
+
 import {
   makeStyles
 } from '@material-ui/core/styles'
@@ -19,45 +21,32 @@ import {
 
 import AppContext from '../contexts/AppContext'
 
+const Form = ({ setOpen = null,id = null,mode = "select" }) => {
 
-const Form = ({ setOpen = null,id = null,editMode = null }) => {
+  const createMode = mode === "create"
+  const selectMode = mode === "select"
 
-  const edit = editMode
-
-   // 0 create 1 edit 2 select
-  const mode = (editMode === true) ? 1 : (editMode === null ) ? 0 : 2
-
-  const useStyles = makeStyles(theme => ({
-    FormControl: {
+  const styles__Form = makeStyles(theme => ({
+    formControl: {
       width: 500
     },
-    Title:{
+    title:{
       fontWeight: "bold"
     },
     hide:{
       display: 'none'
     },
-    Submit: {
+    submit: {
       display: 'block',
       margin: '0 auto'
     },
-    mR_1: {
-      marginRight: theme.spacing(1)
-    },
-    Preview: {
-      width: '150px'
-    },
-    Points: {
-      padding: 0,
-      margin: 0,
-      listStyleType: "none"
-    }
-  }))
+
+  }))()
 
   const {　works, dispatch　} = useContext(AppContext)
 
   const [ work, setWork ] = useState(getInitWork())
-  const [ tmb, setTmb  ] = useState(null)
+  const [ tmb, setTmb ] = useState(null)
 
   // idかworksの変更があれば再レンダリング
   useEffect(()=>{
@@ -76,22 +65,7 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
     } : work[0]
   }
 
-
-  const classes = useStyles()
-
-  const review = e => {
-    const files = e.target.files;
-    const file = files[0];
-    const reader = new FileReader();
-    reader.onload = e => {
-      setTmb(e.target.result);
-    }
-    reader.readAsDataURL(file);
-  }
-
-  const onSubmit = (mode) => {
-
-    const edit = mode === 1 ? true : false
+  const onSubmit = () => {
 
     // pointsの空文字チェック
     const points = work.points.reduce((acc,point)=>{
@@ -109,12 +83,11 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       tmb
     }
     
-    if(!edit){
+    if(createMode){
       dispatch({
         type: CREATE_EVENT,
         info
       })
-      setTmb(null)
       setOpen(false)
     }else{
       dispatch({
@@ -124,147 +97,68 @@ const Form = ({ setOpen = null,id = null,editMode = null }) => {
       })
     }
 
-    setTmb(null)
   }
 
   return (
     <form>
+      {/* タイトル */}
       <Box mb={2}>
-        <Typography className={classes.Title} variant="subtitle1" component="p">
+        <Typography className={styles__Form.title} variant="subtitle1" component="p">
           タイトル
         </Typography>
         <TextField
-          className={edit?'':classes.FormControl}
+          className={!createMode ? "" : styles__Form.formControl}
           fullWidth
           onChange={e=>setWork({...work, title :e.target.value})}
           value={work.title}
-          disabled={mode===2}
+          disabled={selectMode}
         />
       </Box>
+      {/* 概要 */}
       <Box mb={2}>
-        <Typography className={classes.Title} variant="subtitle1" component="p">
+        <Typography className={styles__Form.title} variant="subtitle1" component="p">
           概要
         </Typography>
         <TextField
-          className={edit?'':classes.FormControl}
+          className={!createMode ? "" :styles__Form.formControl}
           fullWidth
           multiline
           onChange={e=>setWork({...work, description :e.target.value})}
           value={work.description}
-          disabled={mode===2}
+          disabled={selectMode}
         />
       </Box>
+      {/* ポイント */}
+      <Form__Points work={work} setWork={setWork} selectMode={selectMode} styles__Form={styles__Form} />
+      {/* URL */}
       <Box mb={2}>
-        <Typography className={classes.Title} variant="subtitle1" component="p">
-          ポイント
-        </Typography>
-        {work.points.length > 0 ?
-          <ul className={classes.Points}>
-          {work.points.map((point,idx)=>{
-            return (
-              <li key={idx}>
-                <Box mb={2}>
-                <TextField 
-                  fullWidth
-                  onChange={e=>{ 
-                    let points = [...work.points]
-                    points[idx] = e.target.value
-                    setWork({...work, points})
-                  }}
-                  value={point}
-                  disabled={mode===2}
-                />
-                </Box>
-              </li>
-            )
-          })}
-          </ul>
-        : ""
-        }
-        <Box mt={2}>
-          <Fab 
-            aria-label="add" 
-            onClick={()=>setWork({...work, points: [...work.points,""]})}
-            className={mode===2?classes.hide:''}
-          >
-            <AddIcon />
-          </Fab>
-        </Box>
-      </Box>
-      <Box mb={2}>
-        <Typography className={classes.Title} variant="subtitle1" component="p">
+        <Typography className={styles__Form.title} variant="subtitle1" component="p">
           URL
         </Typography>
         <TextField
-          className={edit?'':classes.FormControl}
+          className={!createMode ? "" :styles__Form.formControl}
           fullWidth
           onChange={e=>setWork({...work, url :e.target.value})}
           value={work.url}
-          disabled={mode===2}
+          disabled={selectMode}
         />
       </Box>
-      <Box mb={2}>
-        <Typography className={classes.Title} variant="subtitle1" component="p">
-          サムネイル
-        </Typography>
-        {
-        !tmb
-        ?
-          work.tmb!==""
-          ?
-          <Box mb={2} mt={2}><img src={work.tmb} alt="サムネ" className={classes.Preview}  /></Box>
-          :
-            ""
-        :
-        <Box mb={2} mt={2}><img src={tmb} alt="プレビュー画像" className={classes.Preview} /></Box>
-        }
-        <Box mb={2} mt={2}>
-          <input
-            accept="image/*"
-            className={classes.hide}
-            id={"upload_btn_" + mode}
-            multiple
-            type="file"
-            onChange={e=>{
-              review(e)
-            }}
-          />
-          <label htmlFor={"upload_btn_" + mode}>
-            <Button variant="contained" component="span" className={classes.mR_1}>
-              アップロード
-            </Button>
-          </label>
-          <Button variant="contained" component="span">
-              削除
-          </Button>
-        </Box>
-
-      </Box>
+      {/* サムネイル */}
+      <Form__Tmb tmb={tmb} setTmb={setTmb} work={work} mode={mode} selectMode={selectMode} styles__Form={styles__Form} />
       <div>
-
-    {
-    mode===0?
       <Button 
-        className={classes.Submit}
+        className={styles__Form.submit}
         variant="contained" 
         color='primary' 
-        onClick={()=>onSubmit(mode)}
+        onClick={()=>onSubmit()}
+        disabled={selectMode}
       >
-        登録
+      {
+        createMode ? "登録" : "更新"
+      }
       </Button>
-      :
-    mode===1?
-      <Button 
-      className={classes.Submit}
-      variant="contained" 
-      color='primary' 
-      onClick={()=>onSubmit(mode)}
-      >
-        更新
-      </Button>
-      :
-      null
-    }
+
+
       </div>
     </form>
   )

@@ -4,7 +4,6 @@ import {
   Fab,
   Dialog,
   DialogContent,
-  DialogContentText,
   DialogTitle
 } from '@material-ui/core'
 import Form from './Form'
@@ -29,7 +28,7 @@ const Modal = () => {
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle id="form-dialog-title">作品登録</DialogTitle>
         <DialogContent>
-          <Form setOpen={setOpen} />
+          <Form setOpen={setOpen} mode="create" />
         </DialogContent>
       </Dialog>
     </>
